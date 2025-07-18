@@ -13,7 +13,8 @@ type Router struct {
 
 type RouterParams struct {
 	LeaveHandler *LeaveHandler
-	Config      *config.HTTP
+	UserHandler  *UserHandler
+	Config       *config.HTTP
 }
 
 func NewRouter(p RouterParams) *Router {
@@ -27,13 +28,19 @@ func NewRouter(p RouterParams) *Router {
 	}))
 
 	api := app.Group("/api")
+	v1 := api.Group("/v1")
 	{
-		leaves := api.Group("/leaves")
+		leaves := v1.Group("/leaves")
 		{
 			leaves.Post("/request", p.LeaveHandler.RequestLeave)
 			leaves.Get("/all", p.LeaveHandler.GetAllLeaves)
 			leaves.Put("/:id/approve", p.LeaveHandler.ApprovedLeave)
 			leaves.Put("/:id/reject", p.LeaveHandler.RejectedLeave)
+		}
+
+		user := v1.Group("/user")
+		{
+			user.Post("/register", p.UserHandler.RegisterEndpoint)
 		}
 	}
 	return &Router{App: app}

@@ -24,8 +24,13 @@ func Init(config *config.Container) {
 	leaveService := service.NewLeaveService(leaveRepo)
 	leaveHandler := handler.NewLeaveHandler(leaveService)
 
+	userRepo := repository.NewUserRepository(db.DB)
+	userService := service.NewUserService(userRepo)
+	userHandler := handler.NewUserHandler(userService)
+
 	router := handler.NewRouter(handler.RouterParams{
 		LeaveHandler: leaveHandler,
+		UserHandler:  userHandler,
 		Config:       &config.HTTP,
 	})
 
