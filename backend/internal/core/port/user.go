@@ -7,6 +7,8 @@ import (
 type UserRepository interface {
 	CreateUser(user *domain.User) (*domain.User, error)
 	GetUserByID(id string) (*domain.User, error)
+	FindByEmail(email string) (*domain.User, error)
+	FindByGoogleID(googleID string) (*domain.User, error)
 	UpdateUser(user *domain.User) (*domain.User, error)
 	DeleteUser(id string) error
 }

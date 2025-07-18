@@ -1,13 +1,15 @@
 package domain
 
-import "time"
+import "gorm.io/gorm"
 
 type User struct {
-	ID        string    `json:"id"`
-	Username  string    `json:"username"`
-	Password  string    `json:"password"`
-	Email     string    `json:"email"`
-	Role      string    `json:"role"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	gorm.Model
+	Username   string `json:"username" gorm:"unique"`
+	Password   string `json:"password"`
+	Email      string `json:"email"`
+	Role       string `json:"role"`
+	GoogleID   string `json:"google_id,omitempty"`
+	Avatar     string `json:"avatar,omitempty"`
+	Provider   string `json:"provider,omitempty"`
+	IsVerified bool   `json:"is_verified"`
 }
