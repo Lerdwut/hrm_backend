@@ -16,7 +16,6 @@ type UserRepository interface {
 
 type UserService interface {
 	Register(user *domain.User) (*domain.User, error)
-	Login(username, password string) (*domain.User, error)
 	ListUsers() ([]*domain.User, error)
 	FindByEmail(email string) (*domain.User, error)
 	FindByGoogleID(googleID string) (*domain.User, error)
