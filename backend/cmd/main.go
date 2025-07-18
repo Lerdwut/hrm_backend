@@ -26,14 +26,19 @@ func Init(config *config.Container) {
 
 	router := handler.NewRouter(handler.RouterParams{
 		LeaveHandler: leaveHandler,
+		Config:       &config.HTTP,
 	})
 
-	log.Println("Starting server on :3000")
-	if err := router.Start(":3000"); err != nil {
+	log.Println("Starting server on 127.0.0.1:3000")
+	if err := router.Start("127.0.0.1:3000"); err != nil {
 		log.Fatal("Error starting server:", err)
 	}
 }
 
 func main() {
-
+	config, err := config.Load()
+	if err != nil {
+		log.Fatal("Error loading config:", err)
+	}
+	Init(config)
 }

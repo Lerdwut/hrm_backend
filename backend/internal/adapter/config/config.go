@@ -7,6 +7,7 @@ type (
 		DB     DB
 		Google Google
 		Server Server
+		HTTP   HTTP
 	}
 
 	DB struct {
@@ -28,16 +29,24 @@ type (
 		Port string
 		Host string
 	}
+
+	HTTP struct {
+		Env            string
+		URL            string
+		Port           string
+		AllowedOrigins string
+		Prefix         string
+	}
 )
 
-func Load() *Container {
+func Load() (*Container, error) {
 	return &Container{
 		DB: DB{
-			Host:     getEnv("DB_HOST", "localhost"),
-			Port:     getEnv("DB_PORT", "3306"),
-			Username: getEnv("DB_USERNAME", "root"),
-			Password: getEnv("DB_PASSWORD", ""),
-			DBName:   getEnv("DB_NAME", "hrm_db"),
+			Host:     getEnv("DB_HOST", "172.16.113.215"),
+			Port:     getEnv("DB_PORT", "5000"),
+			Username: getEnv("DB_USERNAME", "admin"),
+			Password: getEnv("DB_PASSWORD", "1234"),
+			DBName:   getEnv("DB_NAME", "db_hr"),
 		},
 		Google: Google{
 			ClientID:     getEnv("GOOGLE_CLIENT_ID", ""),
@@ -52,7 +61,14 @@ func Load() *Container {
 			Port: getEnv("SERVER_PORT", "8080"),
 			Host: getEnv("SERVER_HOST", "localhost"),
 		},
-	}
+		HTTP: HTTP{
+			Env:            getEnv("APP_ENV", ""),
+			URL:            getEnv("HTTP_URL", ""),
+			Port:           getEnv("HTTP_PORT", ""),
+			AllowedOrigins: getEnv("HTTP_ALLOWED_ORIGINS", "http://localhost:3000"),
+			Prefix:         getEnv("HTTP_PREFIX", "/api"),
+		},
+	}, nil
 }
 
 func getEnv(key, defaultValue string) string {

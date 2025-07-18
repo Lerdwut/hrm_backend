@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"hr_management/internal/adapter/config"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 )
@@ -11,13 +13,14 @@ type Router struct {
 
 type RouterParams struct {
 	LeaveHandler *LeaveHandler
+	Config      *config.HTTP
 }
 
 func NewRouter(p RouterParams) *Router {
 	app := fiber.New()
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "*",
+		AllowOrigins:     p.Config.AllowedOrigins,
 		AllowHeaders:     "Origin, Content-Type, Accept",
 		AllowMethods:     "GET, POST, PUT, DELETE",
 		AllowCredentials: true,
