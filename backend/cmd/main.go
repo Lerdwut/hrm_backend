@@ -28,17 +28,9 @@ func Init(config *config.Container) {
 		log.Fatalf("Error migrating database: %v", err)
 	}
 
-	// Initialize repositories
 	leaveRepo := repository.NewGormLeaveRepo(db.DB)
-	userRepo := repository.NewUserRepository(db.DB)
-
-	// Initialize services
 	leaveService := service.NewLeaveService(leaveRepo)
-	userService := service.NewUserService(userRepo)
-
-	// Initialize handlers
 	leaveHandler := handler.NewLeaveHandler(leaveService)
-	userHandler := handler.NewUserHandler(userService)
 
 	userRepo := repository.NewUserRepository(db.DB)
 	userService := service.NewUserService(userRepo)
