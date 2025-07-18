@@ -3,6 +3,7 @@ package mysql
 import (
 	"fmt"
 	"hr_management/internal/adapter/config"
+	"hr_management/internal/core/domain"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -14,7 +15,8 @@ type database struct {
 }
 
 var tables = []interface{}{
-	// &d.User{},
+	&domain.User{},
+	&domain.Leave{},
 }
 
 func NewDatabase(config *config.DB) (*database, error) {
@@ -27,10 +29,14 @@ func NewDatabase(config *config.DB) (*database, error) {
 		config.DBName,
 	)
 
+	fmt.Printf("Connecting to database with DSN: %s:***@tcp(%s:%s)/%s\n",
+		config.Username, config.Host, config.Port, config.DBName)
+
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Silent),
+		Logger: logger.Default.LogMode(logger.Info),
 	})
 	if err != nil {
+		fmt.Printf("Database connection failed: %v\n", err)
 		return nil, err
 	}
 	fmt.Println("Database connected!")
@@ -50,12 +56,15 @@ func (db *database) Close() error {
 }
 
 func (db *database) Migrate() error {
-	tx := db.DB.Begin()
-	for _, table := range tables {
+	fmt.Println("Starting database migration...")
+	for i, table := range tables {
+		fmt.Printf("Migrating table %d: %T\n", i+1, table)
 		if err := db.DB.AutoMigrate(table); err != nil {
-			tx.Rollback()
+			fmt.Printf("Error migrating table %T: %v\n", table, err)
 			return err
 		}
+		fmt.Printf("Successfully migrated table: %T\n", table)
 	}
-	return tx.Error
+	fmt.Println("Database migration completed!")
+	return nil
 }

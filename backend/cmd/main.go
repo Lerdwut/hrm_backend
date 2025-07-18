@@ -1,32 +1,44 @@
 package main
 
 import (
-	"github.com/gofiber/fiber/v2"
-	leaveHandler "hr_management/internal/adapter/handler"
-	leaveRepo "hr_management/internal/adapter/storage/mysql/repository"
-	leaveService "hr_management/internal/core/service"
+	"hr_management/internal/adapter/config"
+	"hr_management/internal/adapter/handler"
+	"hr_management/internal/adapter/storage/mysql"
+	"hr_management/internal/adapter/storage/mysql/repository"
+	"hr_management/internal/core/service"
 	"log"
 )
 
-func main() {
-	leaveRepo := leaveRepo.NewGormLeaveRepo()
-	leaveService := leaveService.NewLeaveService(leaveRepo)
-	leaveHandler := leaveHandler.NewLeaveHandler(leaveService)
-
-	app := fiber.New()
-	api := app.Group("/api")
-	{
-		leaves := api.Group("/leaves")
-		{
-			leaves.Post("/request", leaveHandler.RequestLeave)
-			leaves.Get("/all", leaveHandler.GetAllLeaves)
-			leaves.Put("/:id/approve", leaveHandler.ApprovedLeave)
-			leaves.Put("/:id/reject", leaveHandler.RejectedLeave)
-		}
+func Init(config *config.Container) {
+	db, err := mysql.NewDatabase(&config.DB)
+	if err != nil {
+		log.Fatalf("Error initializing database connection: %v", err)
 	}
 
-	log.Println("Starting server on :3000")
-	if err := app.Listen(":3000"); err != nil {
+	err = db.Migrate()
+	if err != nil {
+		log.Fatalf("Error migrating database: %v", err)
+	}
+
+	leaveRepo := repository.NewGormLeaveRepo(db.DB)
+	leaveService := service.NewLeaveService(leaveRepo)
+	leaveHandler := handler.NewLeaveHandler(leaveService)
+
+	router := handler.NewRouter(handler.RouterParams{
+		LeaveHandler: leaveHandler,
+		Config:       &config.HTTP,
+	})
+
+	log.Println("Starting server on 127.0.0.1:3000")
+	if err := router.Start("127.0.0.1:3000"); err != nil {
 		log.Fatal("Error starting server:", err)
 	}
+}
+
+func main() {
+	config, err := config.Load()
+	if err != nil {
+		log.Fatal("Error loading config:", err)
+	}
+	Init(config)
 }
