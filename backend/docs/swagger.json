@@ -1,0 +1,310 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Human Resource Management Backend API with Swagger documentation",
+        "title": "HRM Backend API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:3000",
+    "basePath": "/api/v1",
+    "paths": {
+        "/leaves/all": {
+            "get": {
+                "description": "Get all leave requests",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "leaves"
+                ],
+                "summary": "Get all leaves",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.Leave"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/leaves/request": {
+            "post": {
+                "description": "Submit a new leave request",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "leaves"
+                ],
+                "summary": "Request leave",
+                "parameters": [
+                    {
+                        "description": "Leave request data",
+                        "name": "leave",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Leave"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Leave"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/leaves/{id}/approve": {
+            "put": {
+                "description": "Approve a leave request by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "leaves"
+                ],
+                "summary": "Approve leave",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Leave ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/leaves/{id}/reject": {
+            "put": {
+                "description": "Reject a leave request by ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "leaves"
+                ],
+                "summary": "Reject leave",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Leave ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/users/register": {
+            "post": {
+                "description": "Register a new user account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Register a new user",
+                "parameters": [
+                    {
+                        "description": "User registration data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.registerRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/handler.RegisterResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "domain.Leave": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string",
+                    "example": "2024-01-01T00:00:00Z"
+                },
+                "employee_id": {
+                    "type": "integer",
+                    "example": 123
+                },
+                "from_date": {
+                    "type": "string",
+                    "example": "2024-01-15T00:00:00Z"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "reason": {
+                    "type": "string",
+                    "example": "Family vacation"
+                },
+                "status": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/domain.LeaveStatus"
+                        }
+                    ],
+                    "example": "pending"
+                },
+                "to_date": {
+                    "type": "string",
+                    "example": "2024-01-20T00:00:00Z"
+                }
+            }
+        },
+        "domain.LeaveStatus": {
+            "type": "string",
+            "enum": [
+                "pending",
+                "approved",
+                "rejected"
+            ],
+            "x-enum-comments": {
+                "Approved": "Approved represents an approved leave request",
+                "Pending": "Pending represents a pending leave request",
+                "Rejected": "Rejected represents a rejected leave request"
+            },
+            "x-enum-descriptions": [
+                "Pending represents a pending leave request",
+                "Approved represents an approved leave request",
+                "Rejected represents a rejected leave request"
+            ],
+            "x-enum-varnames": [
+                "Pending",
+                "Approved",
+                "Rejected"
+            ]
+        },
+        "handler.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string",
+                    "example": "Invalid request body"
+                }
+            }
+        },
+        "handler.RegisterResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "User registered successfully"
+                }
+            }
+        },
+        "handler.registerRequest": {
+            "type": "object",
+            "required": [
+                "email",
+                "password",
+                "password_confirmation",
+                "username"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "john@example.com"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 8,
+                    "example": "password123"
+                },
+                "password_confirmation": {
+                    "type": "string",
+                    "minLength": 8,
+                    "example": "password123"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "john_doe"
+                }
+            }
+        }
+    }
+}

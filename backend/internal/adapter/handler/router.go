@@ -5,6 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/swagger"
 )
 
 type Router struct {
@@ -27,15 +28,27 @@ func NewRouter(p RouterParams) *Router {
 		AllowCredentials: true,
 	}))
 
+	// Swagger endpoint
+	app.Get("/swagger/*", swagger.HandlerDefault)
+
 	api := app.Group("/api")
-	v1 := api.Group("/v1")
 	{
-		leaves := v1.Group("/leaves")
+		v1 := api.Group("/v1")
 		{
-			leaves.Post("/request", p.LeaveHandler.RequestLeave)
-			leaves.Get("/all", p.LeaveHandler.GetAllLeaves)
-			leaves.Put("/:id/approve", p.LeaveHandler.ApprovedLeave)
-			leaves.Put("/:id/reject", p.LeaveHandler.RejectedLeave)
+			// User routes
+			users := v1.Group("/users")
+			{
+				users.Post("/register", p.UserHandler.RegisterEndpoint)
+			}
+
+			// Leave routes
+			leaves := v1.Group("/leaves")
+			{
+				leaves.Post("/request", p.LeaveHandler.RequestLeave)
+				leaves.Get("/all", p.LeaveHandler.GetAllLeaves)
+				leaves.Put("/:id/approve", p.LeaveHandler.ApprovedLeave)
+				leaves.Put("/:id/reject", p.LeaveHandler.RejectedLeave)
+			}
 		}
 
 		user := v1.Group("/user")

@@ -15,13 +15,35 @@ func NewUserHandler(userService port.UserService) *UserHandler {
 	return &UserHandler{userService}
 }
 
+// RegisterRequest represents the request body for user registration
 type registerRequest struct {
-	Username             string `json:"username" validate:"required"`
-	Email                string `json:"email,omitempty" validate:"required,email"`
-	Password             string `json:"password,omitempty" validate:"required,min=8"`
-	PasswordConfirmation string `json:"password_confirmation,omitempty" validate:"required,min=8"`
+	Username             string `json:"username" validate:"required" example:"john_doe"`
+	Email                string `json:"email,omitempty" validate:"required,email" example:"john@example.com"`
+	Password             string `json:"password,omitempty" validate:"required,min=8" example:"password123"`
+	PasswordConfirmation string `json:"password_confirmation,omitempty" validate:"required,min=8" example:"password123"`
 }
 
+// RegisterResponse represents the response for user registration
+type RegisterResponse struct {
+	Message string `json:"message" example:"User registered successfully"`
+}
+
+// ErrorResponse represents an error response
+type ErrorResponse struct {
+	Error string `json:"error" example:"Invalid request body"`
+}
+
+// RegisterEndpoint godoc
+// @Summary Register a new user
+// @Description Register a new user account
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param user body registerRequest true "User registration data"
+// @Success 201 {object} RegisterResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /users/register [post]
 func (h *UserHandler) RegisterEndpoint(c *fiber.Ctx) error {
 	var req registerRequest
 	if err := c.BodyParser(&req); err != nil {
@@ -60,6 +82,5 @@ func (h *UserHandler) RegisterEndpoint(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to register user"})
 	}
 
-	res := c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": "User registered successfully"})
-	return c.Status(fiber.StatusOK).JSON(res)
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": "User registered successfully"})
 }
