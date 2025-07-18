@@ -16,6 +16,17 @@ func NewLeaveHandler(s *service.LeaveService) *LeaveHandler {
 	return &LeaveHandler{s: s}
 }
 
+// RequestLeave godoc
+// @Summary Request leave
+// @Description Submit a new leave request
+// @Tags leaves
+// @Accept json
+// @Produce json
+// @Param leave body domain.Leave true "Leave request data"
+// @Success 200 {object} domain.Leave
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500
+// @Router /leaves/request [post]
 func (h *LeaveHandler) RequestLeave(c *fiber.Ctx) error {
 	var req domain.Leave
 	if err := c.BodyParser(&req); err != nil {
@@ -28,6 +39,16 @@ func (h *LeaveHandler) RequestLeave(c *fiber.Ctx) error {
 	return c.JSON(req)
 }
 
+// ApprovedLeave godoc
+// @Summary Approve leave
+// @Description Approve a leave request by ID
+// @Tags leaves
+// @Produce json
+// @Param id path int true "Leave ID"
+// @Success 200
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500
+// @Router /leaves/{id}/approve [put]
 func (h *LeaveHandler) ApprovedLeave(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
@@ -36,6 +57,16 @@ func (h *LeaveHandler) ApprovedLeave(c *fiber.Ctx) error {
 	return h.statusHandler(uint(id), domain.Approved, c)
 }
 
+// RejectedLeave godoc
+// @Summary Reject leave
+// @Description Reject a leave request by ID
+// @Tags leaves
+// @Produce json
+// @Param id path int true "Leave ID"
+// @Success 200
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500
+// @Router /leaves/{id}/reject [put]
 func (h *LeaveHandler) RejectedLeave(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {
@@ -57,6 +88,14 @@ func (h *LeaveHandler) statusHandler(id uint, status domain.LeaveStatus, c *fibe
 	return c.SendStatus(fiber.StatusOK)
 }
 
+// GetAllLeaves godoc
+// @Summary Get all leaves
+// @Description Get all leave requests
+// @Tags leaves
+// @Produce json
+// @Success 200 {array} domain.Leave
+// @Failure 500
+// @Router /leaves/all [get]
 func (h *LeaveHandler) GetAllLeaves(c *fiber.Ctx) error {
 	leaves, err := h.s.GetAllLeaves()
 	if err != nil {
