@@ -10,3 +10,10 @@ type LeaveRepository interface {
 	GetByID(id uint) (*domain.Leave, error)
 	Update(id uint, status domain.LeaveStatus) error
 }
+
+type LeaveService interface {
+	RequestLeave(leave *domain.Leave) error
+	ApprovedLeave(id uint) error
+	RejectedLeave(id uint) error
+	GetAllLeaves() ([]domain.Leave, error)
+}

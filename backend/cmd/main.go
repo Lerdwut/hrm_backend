@@ -2,48 +2,38 @@ package main
 
 import (
 	"hr_management/internal/adapter/config"
-	mysql "hr_management/internal/adapter/storage/mysql"
-	"log/slog"
-	"os"
+	"hr_management/internal/adapter/handler"
+	"hr_management/internal/adapter/storage/mysql"
+	"hr_management/internal/adapter/storage/mysql/repository"
+	"hr_management/internal/core/service"
+	"log"
 )
 
 func Init(config *config.Container) {
-
 	db, err := mysql.NewDatabase(&config.DB)
 	if err != nil {
-		slog.Error("Error initializing database connection", "error", err)
-		os.Exit(1)
+		log.Fatalf("Error initializing database connection: %v", err)
 	}
-	defer db.Close()
 
 	err = db.Migrate()
 	if err != nil {
-		slog.Error("Error migrating database", "error", err)
-		os.Exit(1)
-	}
-	slog.Info("Database migrated successfully")
-
-	// Dependency injection
-	//User
-
-	// leaveRepo := leaveRepo.NewGormLeaveRepo()
-	// leaveService := leaveService.NewLeaveService(leaveRepo)
-	// leaveHandler := leaveHandler.NewLeaveHandler(leaveService)
-
-	// app := fiber.New()
-	// api := app.Group("/api")
-	{
-		// leaves := api.Group("/leaves")
-		// {
-		// 	leaves.Post("/request", leaveHandler.RequestLeave)
-		// 	leaves.Get("/all", leaveHandler.GetAllLeaves)
-		// 	leaves.Put("/:id/approve", leaveHandler.ApprovedLeave)
-		// 	leaves.Put("/:id/reject", leaveHandler.RejectedLeave)
-		// }
+		log.Fatalf("Error migrating database: %v", err)
 	}
 
-	// log.Println("Starting server on :3000")
-	// if err := app.Listen(":3000"); err != nil {
-	// 	log.Fatal("Error starting server:", err)
-	// }
+	leaveRepo := repository.NewGormLeaveRepo(db.DB)
+	leaveService := service.NewLeaveService(leaveRepo)
+	leaveHandler := handler.NewLeaveHandler(leaveService)
+
+	router := handler.NewRouter(handler.RouterParams{
+		LeaveHandler: leaveHandler,
+	})
+
+	log.Println("Starting server on :3000")
+	if err := router.Start(":3000"); err != nil {
+		log.Fatal("Error starting server:", err)
+	}
+}
+
+func main() {
+
 }
