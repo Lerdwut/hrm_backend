@@ -5,25 +5,24 @@ import (
 	"hr_management/internal/core/domain"
 )
 
-type GormLeaveRepo struct {
+type LeaveRepo struct {
 	db *gorm.DB
 }
 
-func NewGormLeaveRepo(db *gorm.DB) *GormLeaveRepo {
-	return &GormLeaveRepo{db: db}
+func NewGormLeaveRepo(db *gorm.DB) *LeaveRepo {
+	return &LeaveRepo{db: db}
 }
-
-func (r *GormLeaveRepo) Create(l *domain.Leave) error {
+func (r *LeaveRepo) Create(l *domain.Leave) error {
 	return r.db.Create(l).Error
 }
 
-func (r *GormLeaveRepo) GetAll() ([]domain.Leave, error) {
+func (r *LeaveRepo) GetAll() ([]domain.Leave, error) {
 	var leaves []domain.Leave
 	err := r.db.Find(&leaves).Error
 	return leaves, err
 }
 
-func (r *GormLeaveRepo) GetByID(id int) (*domain.Leave, error) {
+func (r *LeaveRepo) GetByID(id uint) (*domain.Leave, error) {
 	var leave domain.Leave
 	err := r.db.First(&leave, id).Error
 	if err != nil {
@@ -32,7 +31,7 @@ func (r *GormLeaveRepo) GetByID(id int) (*domain.Leave, error) {
 	return &leave, nil
 }
 
-func (r *GormLeaveRepo) Update(id uint, status domain.LeaveStatus) error {
+func (r *LeaveRepo) Update(id uint, status domain.LeaveStatus) error {
 	var leave domain.Leave
 	err := r.db.First(&leave, id).Error
 	if err != nil {
@@ -41,4 +40,3 @@ func (r *GormLeaveRepo) Update(id uint, status domain.LeaveStatus) error {
 	leave.Status = status
 	return r.db.Save(&leave).Error
 }
-

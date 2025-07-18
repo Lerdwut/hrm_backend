@@ -5,7 +5,6 @@ import (
 )
 
 type LeaveStatus string
-
 const (
 	Pending   LeaveStatus = "pending"
 	Approved  LeaveStatus = "approved"
