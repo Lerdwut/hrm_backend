@@ -7,7 +7,7 @@ import (
 type UserRepository interface {
 	CreateUser(user *domain.User) (*domain.User, error)
 	GetAllUsers() ([]*domain.User, error)
-	GetUserByID(id string) (*domain.User, error)
+	GetUserByUsername(id string) (*domain.User, error)
 	UpdateUser(user *domain.User) (*domain.User, error)
 	DeleteUser(id string) error
 	FindByEmail(email string) (*domain.User, error)
@@ -16,6 +16,7 @@ type UserRepository interface {
 
 type UserService interface {
 	Register(user *domain.User) (*domain.User, error)
+	Login(username, password string) (*domain.User, error)
 	ListUsers() ([]*domain.User, error)
 	FindByEmail(email string) (*domain.User, error)
 	FindByGoogleID(googleID string) (*domain.User, error)
