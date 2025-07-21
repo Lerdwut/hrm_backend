@@ -13,9 +13,8 @@ type (
 	DB struct {
 		Host     string
 		Port     string
-		Username string
-		Password string
-		DBName   string
+		Database string
+		Collection string
 	}
 
 	Google struct {
@@ -42,11 +41,10 @@ type (
 func Load() (*Container, error) {
 	return &Container{
 		DB: DB{
-			Host:     getEnv("DB_HOST", "172.16.113.215"),
-			Port:     getEnv("DB_PORT", "5000"),
-			Username: getEnv("DB_USERNAME", "admin"),
-			Password: getEnv("DB_PASSWORD", "1234"),
-			DBName:   getEnv("DB_NAME", "db_hr"),
+			Host:     getEnv("DB_HOST", "localhost"),
+			Port:     getEnv("DB_PORT", "27017"),
+			Database: getEnv("DB_DATABASE", "hexagonal-v1-mongo"),
+			Collection: getEnv("DB_COLLECTION", ""),
 		},
 		Google: Google{
 			ClientID:     getEnv("GOOGLE_CLIENT_ID", ""),

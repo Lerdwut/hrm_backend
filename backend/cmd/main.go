@@ -3,8 +3,8 @@ package main
 import (
 	"hr_management/internal/adapter/config"
 	"hr_management/internal/adapter/handler"
-	"hr_management/internal/adapter/storage/mysql"
-	"hr_management/internal/adapter/storage/mysql/repository"
+	mongodb "hr_management/internal/adapter/storage/mongodb"
+	"hr_management/internal/adapter/storage/mongodb/repository"
 	"hr_management/internal/core/service"
 	"log"
 
@@ -18,27 +18,24 @@ import (
 // @BasePath /api/v1
 
 func Init(config *config.Container) {
-	db, err := mysql.NewDatabase(&config.DB)
+	// Connect to MongoDB
+	db, err := mongodb.NewDatabase(&config.DB)
 	if err != nil {
-		log.Fatalf("Error initializing database connection: %v", err)
+		log.Fatal("Error connecting to MongoDB:", err)
 	}
+	defer db.Close()
 
-	err = db.Migrate()
-	if err != nil {
-		log.Fatalf("Error migrating database: %v", err)
-	}
-
-	leaveRepo := repository.NewGormLeaveRepo(db.DB)
+	leaveRepo := repository.NewMongoLeaveRepo(db.DB)
 	leaveService := service.NewLeaveService(leaveRepo)
 	leaveHandler := handler.NewLeaveHandler(leaveService)
 
-	userRepo := repository.NewUserRepository(db.DB)
-	userService := service.NewUserService(userRepo)
-	userHandler := handler.NewUserHandler(userService)
+	// userRepo := repository.NewUserRepository(db.DB)
+	// userService := service.NewUserService(userRepo)
+	// userHandler := handler.NewUserHandler(userService)
 
 	router := handler.NewRouter(handler.RouterParams{
 		LeaveHandler: leaveHandler,
-		UserHandler:  userHandler,
+		// UserHandler:  userHandler,
 		Config:       &config.HTTP,
 	})
 
@@ -49,9 +46,9 @@ func Init(config *config.Container) {
 }
 
 func main() {
-	config, err := config.Load()
+	cfg, err := config.Load()
 	if err != nil {
 		log.Fatal("Error loading config:", err)
 	}
-	Init(config)
+	Init(cfg)
 }
