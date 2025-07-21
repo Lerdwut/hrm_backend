@@ -14,7 +14,7 @@ func NewAuthService(userRepository port.UserRepository) *AuthService {
 }
 
 func (as *AuthService) Login(username, password string) (*domain.User, error) {
-	repoUser, err := as.repo.GetUserByUsername(username)
+	repoUser, err := as.repo.FindByUsername(username)
 	if err != nil {
 		if err == domain.ErrDataNotFound {
 			return nil, domain.ErrDataNotFound

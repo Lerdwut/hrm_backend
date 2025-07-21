@@ -15,11 +15,11 @@ const (
 
 // Leave represents a leave request
 type Leave struct {
-	ID         uint        `json:"id" gorm:"primaryKey" example:"1"`
-	EmployeeID uint        `json:"employee_id" example:"123"`
-	Reason     string      `json:"reason" example:"Family vacation"`
-	FromDate   time.Time   `json:"from_date" example:"2024-01-15T00:00:00Z"`
-	ToDate     time.Time   `json:"to_date" example:"2024-01-20T00:00:00Z"`
-	Status     LeaveStatus `json:"status" example:"pending"`
-	CreatedAt  time.Time   `json:"created_at" example:"2024-01-01T00:00:00Z"`
+	ID         uint        `bson:"id" gorm:"primaryKey" example:"1"`
+	EmployeeID uint        `bson:"employee_id" example:"123"`
+	Reason     string      `bson:"reason" example:"Family vacation"`
+	FromDate   time.Time   `bson:"from_date" example:"2024-01-15T00:00:00Z"`
+	ToDate     time.Time   `bson:"to_date" example:"2024-01-20T00:00:00Z"`
+	Status     LeaveStatus `bson:"status" example:"pending"`
+	CreatedAt  time.Time   `bson:"created_at" example:"2024-01-01T00:00:00Z"`
 }

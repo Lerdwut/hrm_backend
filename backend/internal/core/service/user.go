@@ -35,6 +35,17 @@ func (us *UserService) ListUsers() ([]*domain.User, error) {
 	return user, nil
 }
 
+func (us *UserService) FindByUsername(username string) (*domain.User, error) {
+	user, err := us.repo.FindByUsername(username)
+	if err != nil {
+		if err == domain.ErrDataNotFound {
+			return nil, domain.ErrDataNotFound
+		}
+		return nil, domain.ErrInternal
+	}
+	return user, nil
+}
+
 func (us *UserService) FindByEmail(email string) (*domain.User, error) {
 	return us.repo.FindByEmail(email)
 }

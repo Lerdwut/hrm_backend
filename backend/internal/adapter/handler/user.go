@@ -3,6 +3,7 @@ package handler
 import (
 	"hr_management/internal/core/domain"
 	"hr_management/internal/core/port"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -71,10 +72,14 @@ func (h *UserHandler) RegisterEndpoint(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Password confirmation does not match"})
 	}
 
+	// uuid := uuid.New().String()
+
 	user := domain.User{
-		Username: req.Username,
-		Email:    req.Email,
-		Password: req.Password,
+		Username:  req.Username,
+		Email:     req.Email,
+		Password:  req.Password,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 
 	_, err := h.userService.Register(&user)
@@ -82,5 +87,34 @@ func (h *UserHandler) RegisterEndpoint(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to register user"})
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": "User registered successfully"})
+	return c.Status(fiber.StatusCreated).JSON(fiber.Map{"message": "User registered successfully", "user": user})
+}
+
+func (h *UserHandler) GetUserByUsername(c *fiber.Ctx) error {
+	username := c.Params("username")
+	if username == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "Username is required"})
+	}
+
+	user, err := h.userService.FindByUsername(username)
+	if err != nil {
+		if err == domain.ErrDataNotFound {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "User not found"})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to retrieve user"})
+	}
+
+	return c.JSON(user)
+}
+
+func (h *UserHandler) ListUsers(c *fiber.Ctx) error {
+	users, err := h.userService.ListUsers()
+	if err != nil {
+		if err == domain.ErrDataNotFound {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"error": "No users found"})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": "Failed to retrieve users"})
+	}
+
+	return c.JSON(users)
 }

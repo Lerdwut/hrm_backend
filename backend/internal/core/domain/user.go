@@ -1,16 +1,20 @@
 package domain
 
-import "gorm.io/gorm"
+import (
+	"time"
 
-// User represents a user in the system
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
 type User struct {
-	gorm.Model
-	Username   string `json:"username" gorm:"unique" example:"john_doe"`
-	Password   string `json:"password,omitempty" example:"password123"`
-	Email      string `json:"email" example:"john@example.com"`
-	Role       string `json:"role" example:"employee"`
-	GoogleID   string `json:"google_id,omitempty" example:"123456789"`
-	Avatar     string `json:"avatar,omitempty" example:"https://example.com/avatar.jpg"`
-	Provider   string `json:"provider,omitempty" example:"google"`
-	IsVerified bool   `json:"is_verified" example:"false"`
+	ID         primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	Username   string             `bson:"username" json:"username"`
+	Email      string             `bson:"email" json:"email"`
+	Password   string             `bson:"password,omitempty" json:"-"` // optional สำหรับ OAuth
+	GoogleID   string             `bson:"google_id,omitempty" json:"-"`
+	Avatar     string             `bson:"avatar,omitempty" json:"avatar"`
+	Provider   string             `bson:"provider" json:"provider"` // "local", "google"
+	IsVerified bool               `bson:"is_verified" json:"is_verified"`
+	CreatedAt  time.Time          `bson:"created_at" json:"created_at"`
+	UpdatedAt  time.Time          `bson:"updated_at" json:"updated_at"`
 }

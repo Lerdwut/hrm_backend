@@ -71,6 +71,18 @@ var (
 
 	// ErrEncodeAccessToken is an error for when the access token cannot be encoded
 	ErrEncodeAccessToken = errors.New("error encoding access token")
+
+	// ErrDecodeAccessToken is an error for when the access token cannot be decoded
+	ErrDecodeAccessToken = errors.New("error decoding access token")
+
+	// ErrMongoURI is an error for when the MongoDB URI is not found
+	ErrMongoURI = errors.New("MONGODB_URI not found in environment variables")
+
+	// ErrDatabaseName is an error for when the database name is not found
+	ErrDatabaseName = errors.New("DATABASE_NAME not found in environment variables")
+
+	// ErrMongoConnection is an error for when the MongoDB connection fails
+	ErrMongoConnection = errors.New("failed to connect to MongoDB")
 )
 
 // IsUniqueConstraintViolationError checks if the error is a unique constraint violation error

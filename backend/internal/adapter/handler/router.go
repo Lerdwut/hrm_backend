@@ -54,6 +54,8 @@ func NewRouter(p RouterParams) *Router {
 		user := v1.Group("/user")
 		{
 			user.Post("/register", p.UserHandler.RegisterEndpoint)
+			user.Get("/all", p.UserHandler.ListUsers)
+			user.Get("/:username", p.UserHandler.GetUserByUsername)
 		}
 	}
 	return &Router{App: app}

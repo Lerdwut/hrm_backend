@@ -4,10 +4,11 @@ import "os"
 
 type (
 	Container struct {
-		DB     DB
-		Google Google
-		Server Server
-		HTTP   HTTP
+		DB      DB
+		MongoDB DB
+		Google  Google
+		Server  Server
+		HTTP    HTTP
 	}
 
 	DB struct {
@@ -48,6 +49,10 @@ func Load() (*Container, error) {
 			Password: getEnv("DB_PASSWORD", "1234"),
 			DBName:   getEnv("DB_NAME", "db_hr"),
 		},
+		MongoDB: DB{
+			Host:   getEnv("MONGODB_URI", "mongodb://localhost:27017"),
+			DBName: getEnv("DATABASE_NAME", "hr_management"),
+		},
 		Google: Google{
 			ClientID:     getEnv("GOOGLE_CLIENT_ID", ""),
 			ClientSecret: getEnv("GOOGLE_CLIENT_SECRET", ""),
@@ -62,9 +67,9 @@ func Load() (*Container, error) {
 			Host: getEnv("SERVER_HOST", "localhost"),
 		},
 		HTTP: HTTP{
-			Env:            getEnv("APP_ENV", ""),
-			URL:            getEnv("HTTP_URL", ""),
-			Port:           getEnv("HTTP_PORT", ""),
+			Env:            getEnv("APP_ENV", "development"),
+			URL:            getEnv("HTTP_URL", "127.0.0.1"),
+			Port:           getEnv("HTTP_PORT", "8080"),
 			AllowedOrigins: getEnv("HTTP_ALLOWED_ORIGINS", "http://localhost:3000"),
 			Prefix:         getEnv("HTTP_PREFIX", "/api"),
 		},
