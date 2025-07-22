@@ -11,7 +11,7 @@ const (
 	// ProviderLocal  OAuthProvider = "local"
 )
 
-type OAuthUser struct {
+type GoogleUser struct {
 	ID       string        `json:"id"`
 	Email    string        `json:"email"`
 	Name     string        `json:"name"`
@@ -20,7 +20,7 @@ type OAuthUser struct {
 	Verified bool          `json:"verified"`
 }
 
-type OAuthState struct {
+type GoogleState struct {
 	State     string    `json:"state"`
 	CreatedAt time.Time `json:"created_at"`
 	ExpiresAt time.Time `json:"expires_at"`

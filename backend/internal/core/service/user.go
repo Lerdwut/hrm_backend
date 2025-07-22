@@ -54,7 +54,7 @@ func (us *UserService) FindByGoogleID(googleID string) (*domain.User, error) {
 	return us.repo.FindByGoogleID(googleID)
 }
 
-func (us *UserService) CreateOAuthUser(oauthUser *domain.OAuthUser) (*domain.User, error) {
+func (us *UserService) CreateGoogleUser(oauthUser *domain.GoogleUser) (*domain.User, error) {
 	user := &domain.User{
 		Username:   oauthUser.Name,
 		Email:      oauthUser.Email,
@@ -67,7 +67,7 @@ func (us *UserService) CreateOAuthUser(oauthUser *domain.OAuthUser) (*domain.Use
 	return us.repo.CreateUser(user)
 }
 
-func (us *UserService) UpdateOAuthUser(user *domain.User, oauthUser *domain.OAuthUser) (*domain.User, error) {
+func (us *UserService) UpdateGoogleUser(user *domain.User, oauthUser *domain.GoogleUser) (*domain.User, error) {
 	user.Username = oauthUser.Name
 	user.Email = oauthUser.Email
 	user.Avatar = oauthUser.Picture

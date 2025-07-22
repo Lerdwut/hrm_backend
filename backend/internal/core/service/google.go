@@ -19,7 +19,7 @@ import (
 type googleService struct {
 	config       *oauth2.Config
 	userService  port.UserService
-	stateStorage map[string]*domain.OAuthState
+	stateStorage map[string]*domain.GoogleState
 }
 
 func NewGoogleService(userService port.UserService) port.GoogleService {
@@ -32,7 +32,7 @@ func NewGoogleService(userService port.UserService) port.GoogleService {
 			Endpoint:     google.Endpoint,
 		},
 		userService:  userService,
-		stateStorage: make(map[string]*domain.OAuthState),
+		stateStorage: make(map[string]*domain.GoogleState),
 	}
 }
 
@@ -71,13 +71,13 @@ func (gs *googleService) HandleCallback(code, state string) (*domain.User, error
 
 	if user == nil {
 		// Create new user
-		user, err = gs.userService.CreateOAuthUser(oauthUser)
+		user, err = gs.userService.CreateGoogleUser(oauthUser)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create user: %v", err)
 		}
 	} else {
 		// Update existing user
-		user, err = gs.userService.UpdateOAuthUser(user, oauthUser)
+		user, err = gs.userService.UpdateGoogleUser(user, oauthUser)
 		if err != nil {
 			return nil, fmt.Errorf("failed to update user: %v", err)
 		}
@@ -110,7 +110,7 @@ func (gs *googleService) GenerateState() string {
 	state := hex.EncodeToString(b)
 
 	// Store the state with a timeout
-	gs.stateStorage[state] = &domain.OAuthState{
+	gs.stateStorage[state] = &domain.GoogleState{
 		State:     state,
 		CreatedAt: time.Now(),
 		ExpiresAt: time.Now().Add(10 * time.Minute), // Add expiration time
@@ -119,7 +119,7 @@ func (gs *googleService) GenerateState() string {
 	return state
 }
 
-func (gs *googleService) getUserInfo(token *oauth2.Token) (*domain.OAuthUser, error) {
+func (gs *googleService) getUserInfo(token *oauth2.Token) (*domain.GoogleUser, error) {
 	client := gs.config.Client(context.Background(), token)
 	resp, err := client.Get("https://www.googleapis.com/oauth2/v3/userinfo")
 	if err != nil {
@@ -131,11 +131,11 @@ func (gs *googleService) getUserInfo(token *oauth2.Token) (*domain.OAuthUser, er
 		return nil, fmt.Errorf("failed to get user info: status code %d", resp.StatusCode)
 	}
 
-	var oauthUser domain.OAuthUser
-	if err := json.NewDecoder(resp.Body).Decode(&oauthUser); err != nil {
+	var googleUser domain.GoogleUser
+	if err := json.NewDecoder(resp.Body).Decode(&googleUser); err != nil {
 		return nil, fmt.Errorf("failed to decode user info: %v", err)
 	}
 
-	oauthUser.Provider = domain.ProviderGoogle
-	return &oauthUser, nil
+	googleUser.Provider = domain.ProviderGoogle
+	return &googleUser, nil
 }

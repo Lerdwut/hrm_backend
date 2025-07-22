@@ -20,6 +20,6 @@ type UserService interface {
 	FindByUsername(username string) (*domain.User, error)
 	FindByEmail(email string) (*domain.User, error)
 	FindByGoogleID(googleID string) (*domain.User, error)
-	CreateOAuthUser(oauthUser *domain.OAuthUser) (*domain.User, error)
-	UpdateOAuthUser(user *domain.User, oauthUser *domain.OAuthUser) (*domain.User, error)
+	CreateGoogleUser(oauthUser *domain.GoogleUser) (*domain.User, error)
+	UpdateGoogleUser(user *domain.User, oauthUser *domain.GoogleUser) (*domain.User, error)
 }
