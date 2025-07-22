@@ -7,12 +7,12 @@ import (
 )
 
 type AttendanceInfo struct {
-	AttendanceID string        `bson:"attendance_id,omitempty" json:"attendance_id,omitempty"`
-	Timestamp    time.Time     `bson:"timestamp,omitempty" json:"timestamp,omitempty"`
-	Type         string        `bson:"type,omitempty" json:"type,omitempty"` // "checkin" หรือ "checkout"
-	Status       string        `bson:"status,omitempty" json:"status,omitempty"`
-	Note         string        `bson:"note,omitempty" json:"note,omitempty"`
-	GPS          []GPSLocation `bson:"gps,omitempty" json:"gps,omitempty"`
+	AttendanceID primitive.ObjectID `bson:"attendance_id,omitempty" json:"attendance_id,omitempty"`
+	Timestamp    time.Time          `bson:"timestamp,omitempty" json:"timestamp,omitempty"`
+	Type         string             `bson:"type,omitempty" json:"type,omitempty"` // "checkin" หรือ "checkout"
+	// Status       string             `bson:"status,omitempty" json:"status,omitempty"`
+	// Note string        `bson:"note,omitempty" json:"note,omitempty"`
+	GPS []GPSLocation `bson:"gps,omitempty" json:"gps,omitempty"`
 }
 
 type GPSLocation struct {
