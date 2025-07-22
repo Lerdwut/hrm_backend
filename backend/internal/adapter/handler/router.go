@@ -13,9 +13,10 @@ type Router struct {
 }
 
 type RouterParams struct {
-	LeaveHandler *LeaveHandler
-	UserHandler  *UserHandler
-	Config       *config.HTTP
+	LeaveHandler  *LeaveHandler
+	UserHandler   *UserHandler
+	GoogleHandler *GoogleHandler
+	Config        *config.HTTP
 }
 
 func NewRouter(p RouterParams) *Router {
@@ -48,6 +49,16 @@ func NewRouter(p RouterParams) *Router {
 				leaves.Get("/all", p.LeaveHandler.GetAllLeaves)
 				leaves.Put("/:id/approve", p.LeaveHandler.ApprovedLeave)
 				leaves.Put("/:id/reject", p.LeaveHandler.RejectedLeave)
+			}
+
+			// Auth routes
+			auth := v1.Group("/auth")
+			{
+				google := auth.Group("/google")
+				{
+					google.Get("/login", p.GoogleHandler.GoogleLogin)
+					google.Get("/callback", p.GoogleHandler.GoogleCallback)
+				}
 			}
 		}
 

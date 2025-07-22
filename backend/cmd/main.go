@@ -60,9 +60,14 @@ func Init(config *config.Container) {
 	userService := service.NewUserService(userRepo)
 	userHandler := handler.NewUserHandler(userService)
 
+	// Create Google service and handler
+	googleService := service.NewGoogleService(userService)
+	googleHandler := handler.NewGoogleHandler(googleService)
+
 	router := handler.NewRouter(handler.RouterParams{
-		UserHandler: userHandler,
-		Config:      &config.HTTP,
+		UserHandler:   userHandler,
+		GoogleHandler: googleHandler,
+		Config:        &config.HTTP,
 	})
 
 	log.Printf("Starting server on :%s", config.HTTP.Port)

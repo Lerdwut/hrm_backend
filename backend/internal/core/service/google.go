@@ -113,6 +113,7 @@ func (gs *googleService) GenerateState() string {
 	gs.stateStorage[state] = &domain.OAuthState{
 		State:     state,
 		CreatedAt: time.Now(),
+		ExpiresAt: time.Now().Add(10 * time.Minute), // Add expiration time
 	}
 
 	return state
