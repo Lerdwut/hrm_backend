@@ -9,6 +9,8 @@ import (
 	"log"
 
 	_ "hr_management/docs" // Swagger docs
+
+	"github.com/joho/godotenv"
 )
 
 // @title HRM Backend API
@@ -78,11 +80,15 @@ func Init(config *config.Container) {
 }
 
 func main() {
+	// Load environment variables
+	if err := godotenv.Load(); err != nil {
+		log.Println("Warning: Error loading .env file:", err)
+	}
+
 	config, err := config.Load()
 	if err != nil {
 		log.Fatal("Error loading config:", err)
 	}
 
 	Init(config)
-
 }

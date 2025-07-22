@@ -3,6 +3,7 @@ package service
 import (
 	"hr_management/internal/core/domain"
 	"hr_management/internal/core/port"
+	"time"
 )
 
 type UserService struct {
@@ -47,14 +48,29 @@ func (us *UserService) FindByUsername(username string) (*domain.User, error) {
 }
 
 func (us *UserService) FindByEmail(email string) (*domain.User, error) {
-	return us.repo.FindByEmail(email)
+	user, err := us.repo.FindByEmail(email)
+	if err != nil {
+		if err == domain.ErrDataNotFound {
+			return nil, nil // Return nil user และ nil error เมื่อไม่เจอ user
+		}
+		return nil, domain.ErrInternal
+	}
+	return user, nil
 }
 
 func (us *UserService) FindByGoogleID(googleID string) (*domain.User, error) {
-	return us.repo.FindByGoogleID(googleID)
+	user, err := us.repo.FindByGoogleID(googleID)
+	if err != nil {
+		if err == domain.ErrDataNotFound {
+			return nil, nil // Return nil user และ nil error เมื่อไม่เจอ user
+		}
+		return nil, domain.ErrInternal
+	}
+	return user, nil
 }
 
 func (us *UserService) CreateGoogleUser(oauthUser *domain.GoogleUser) (*domain.User, error) {
+	now := time.Now()
 	user := &domain.User{
 		Username:   oauthUser.Name,
 		Email:      oauthUser.Email,
@@ -62,6 +78,8 @@ func (us *UserService) CreateGoogleUser(oauthUser *domain.GoogleUser) (*domain.U
 		GoogleID:   oauthUser.ID,
 		Provider:   string(oauthUser.Provider),
 		IsVerified: oauthUser.Verified,
+		CreatedAt:  now,
+		UpdatedAt:  now,
 	}
 
 	return us.repo.CreateUser(user)
